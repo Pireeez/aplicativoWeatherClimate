@@ -1,0 +1,2 @@
+Geocodificação: https://geocoding-api.open-meteo.com/v1/search?name=NOME+DA+CIDADE
+BuscaClima: https://api.open-meteo.com/v1/forecast?latitude=LAT&longitude=LON&current_weather=true

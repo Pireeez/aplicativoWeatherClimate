@@ -2,19 +2,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <script defer src="/script/script.js"></script>
    
 </head>
 <body>
     <div class="grid">
         <header class="grid-nav">
-            <input class="input-header" type="text" placeholder="Escreva aqui...">
+            <input id="input-header" type="text" placeholder="Escreva uma cidade...">
+            <button id="button-header">Pesquisar</button>
         </header>
+        
         <main class="grid-main">
             <div class="box-weather">
-                <img id="weather-image" src="/img/limpoNoite.png" alt="">
-                <h3 id="location-clima-main">São Paulo</h1>
+                <img id="weather-image" src="/img/sol.png" alt="">
+                <h2 id="location-city-main">São Paulo</h2>
+                <h3 id="location-coutry-main">Brasil</h3>
                 <h1 id="weather-clima">30º</h1>
                 <div class="box-main-p">
                     <p>Máx.: 31º</p><p>Mín.: 17º</p>
@@ -23,7 +27,7 @@
         </main>
 
         <section class="grid-week">
-            <div class="box-week">a</div>
+            <div class="box-week">Temperadura</div>
             <div class="box-week">a</div>
             <div class="box-week">a</div>
             <div class="box-week">a</div>

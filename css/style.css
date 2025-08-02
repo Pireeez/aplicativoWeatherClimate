@@ -8,9 +8,9 @@
     text-decoration: none;
 }
 :root{
-    --background-gradiente1-day:rgba(217, 245, 243, 0.986);
-    --background-gradiente2-day:rgb(0, 255, 221);
-    --background-gradiente3-day:rgb(0, 131, 131);
+    --background-gradiente1-day:rgba(242, 245, 103, 0.986);
+    --background-gradiente2-day:rgb(9, 247, 215);
+    --background-gradiente3-day:rgb(245, 255, 111);
 
     --background-gradiente1-afternoon:rgb(250, 206, 124);
     --background-gradiente2-afternoon:rgb(228, 149, 4);
@@ -21,13 +21,17 @@
     --background-gradiente3-night:rgb(22, 0, 56);
 
     --border-color: gray;
-    --background-color-transp: rgba(255, 255, 255, 0.164);
+    --background-color-transp: rgba(255, 255, 255, 0.589);
     --color-input-text: black;
-    --color-text-night: white;
+    --color-button-text:white;
+    --color-text-night: rgb(0, 0, 0);
+    --color-text-day: black;
+    --color-text-afternoon:black;
 }
 
 body{
     background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night));
+    background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day));
     background-size: 600% 600%;
     animation: gradientShift 3s ease infinite;
 }
@@ -43,18 +47,27 @@ body{
 .grid-nav{ 
     grid-area: header;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-around;
     align-items: center;
 
 }
-.input-header{
+#input-header{
     border-radius: 10px;
-    width: 300px;
+    width: 290px;
     height: 30px;
     background-color: var(--background-color-transp);
     padding-left: 10px;
     border: none;
+    cursor: pointer;
+}
+
+#button-header{
+    border-radius: 10px;
+    border: none;
+    background-color: var(--background-color-transp);
+    padding: 5px 10px;
+    color: var(--color-button-text);
 }
 
 .grid-main{
@@ -81,20 +94,17 @@ body{
     grid-area: box;
     display: flex;
     gap: 10px;
-    overflow-x: auto; /* Rolagem horizontal */
-    scroll-snap-type: x mandatory; /* Faz o snap */
-    -webkit-overflow-scrolling: touch; /* Suaviza no iOS */
+    overflow-x: auto; 
+    scroll-snap-type: x mandatory; 
+    -webkit-overflow-scrolling: touch; 
     padding: 10px;
 }
-
-
 
 .grid-week::-webkit-scrollbar{
     display: none;
 }
-
 .box-week{
-    flex: 0 0 auto; /* Impede de encolher e mantém lado a lado */
+    flex: 0 0 auto; 
     width: 150px;
     height: 150px;
     border-radius: 30px;
@@ -102,7 +112,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    scroll-snap-align: start; /* Alinha no snap */
+    scroll-snap-align: start; 
     font-weight: bold;
     cursor: grab;
 }

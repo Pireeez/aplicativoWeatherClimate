@@ -1,6 +1,6 @@
 *{
-    padding: 0;
-    margin: 0;
+    padding: 0px;
+    margin: 0px;
     box-sizing: content-box;
     font-family: 'Poppins', sans-serif;
     list-style: none;
@@ -21,17 +21,17 @@
     --background-gradiente3-night:rgb(22, 0, 56);
 
     --border-color: gray;
-    --background-color-transp: rgba(255, 255, 255, 0.589);
+    --color-btn-header:black;
+    --background-color-transp: rgba(255, 255, 255, 0.822);
     --color-input-text: black;
-    --color-button-text:white;
-    --color-text-night: rgb(0, 0, 0);
+    --color-text-night: rgb(255, 255, 255);
     --color-text-day: black;
     --color-text-afternoon:black;
 }
 
 body{
     background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night));
-    background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day));
+    /* background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); */
     background-size: 600% 600%;
     animation: gradientShift 3s ease infinite;
 }
@@ -39,10 +39,10 @@ body{
     display: grid;
     grid-template-areas: 
     'header header'
-    'main main'
-    'box box';
+    'box box'
+    'main main';
     border: 1px solid rgb(255, 0, 0);
-    height: 100%;
+
 }
 .grid-nav{ 
     grid-area: header;
@@ -50,6 +50,7 @@ body{
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+    height: 50px;
 
 }
 #input-header{
@@ -67,37 +68,43 @@ body{
     border: none;
     background-color: var(--background-color-transp);
     padding: 5px 10px;
-    color: var(--color-button-text);
+    color: var(--color-btn-header);
 }
 
 .grid-main{
     grid-area: main;
+    color: var(--color-text-night);
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 0px;
+}
+
+
+#location-clima-main{font-size: 1.5rem;}
+#weather-clima{font-size: 3rem;}
+.box-weather{
+    width: 100%;
+}
+.box-main-p{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    height: 100%;
-    margin-bottom: 80%;
-    color: var(--color-text-night);
-}
-#location-clima-main{font-size: 1.5rem;}
-#weather-clima{font-size: 3rem;}
-.box-weather{width: 40%;}
-.box-main-p{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+    border: 1px solid black;
+
 }
 
 .grid-week{
     grid-area: box;
     display: flex;
-    gap: 10px;
+    gap: 5px;
     overflow-x: auto; 
     scroll-snap-type: x mandatory; 
     -webkit-overflow-scrolling: touch; 
-    padding: 10px;
+    padding: 20px;
 }
 
 .grid-week::-webkit-scrollbar{
@@ -105,16 +112,19 @@ body{
 }
 .box-week{
     flex: 0 0 auto; 
-    width: 150px;
-    height: 150px;
+    width: 220px;
+    height: 30px;
     border-radius: 30px;
     background-color: var(--background-color-transp);
     display: flex;
     align-items: center;
+    text-align: center;
     justify-content: center;
     scroll-snap-align: start; 
-    font-weight: bold;
     cursor: grab;
+    font-size: 0.7rem;
+    flex-wrap: wrap;
+    padding: 5px;
 }
 
 @keyframes gradientShift {

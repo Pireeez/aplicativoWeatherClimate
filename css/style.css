@@ -30,11 +30,12 @@
 }
 
 body{
-    background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night));
-    /* background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); */
+    /*background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night));*/
+    background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); 
     background-size: 600% 600%;
     animation: gradientShift 3s ease infinite;
 }
+
 .grid{
     display: grid;
     grid-template-areas: 
@@ -73,9 +74,8 @@ body{
 
 .grid-main{
     grid-area: main;
-    color: var(--color-text-night);
+    color: var(--color-text-day);
     height: 100vh;
-
     display: flex;
     justify-content: center;
     text-align: center;
@@ -83,18 +83,25 @@ body{
 }
 
 
-#location-clima-main{font-size: 1.5rem;}
-#weather-clima{font-size: 3rem;}
+#location-city-main{font-size: 2.5rem;}
+#temperature{font-size: 3rem;}
+#location-coutry-main{font-size: 1.5rem;}
 .box-weather{
     width: 100%;
 }
 .box-main-p{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid black;
+    font-size: 1rem;
 
+}
+
+.box-main-p p{
+    margin: 10px 10px;
+    border-radius: 15px;
+    padding: 15px;
+    background-color: var(--background-color-transp);
+    color: var(--color-input-text);
 }
 
 .grid-week{

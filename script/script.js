@@ -1,25 +1,27 @@
+const gridWeek = document.querySelector('.grid-week');
 const btnHeader = document.querySelector('#button-header')
     .addEventListener('click', () => {
         let inputHeader = document.querySelector('#input-header').value;
-        fetchCityData(inputHeader)
+        fetchCityData(inputHeader);
     })
 
 //requisição API geocodificação usando nome da cidade e envia resultado para 
 const fetchCityData = async(inputValue) => {
+    gridWeek.textContent = "Carregando...";
     try {
         const data = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${inputValue}`).then(data => data.json());
+        createCityList(data);
 
-        createCityList(data)
     } catch (erro) {
-        alert("Alguam coisa deu errado",erro)
+        alert("Erro: Cidade não localizada!",erro)
     }
 }
 
 //cria uma lista de cidade para cada resultado retornado pela api
 const createCityList = (data) => {
-    const gridWeek = document.querySelector('.grid-week');
     gridWeek.innerHTML = '';
     const cityInfo = data.results.map(data => `${data.name} - ${data.admin1}, ${data.country}`);
+
     for(let i=0; i < cityInfo.length;i++){
             const div = document.createElement('div');
             div.className = 'box-week';
@@ -35,7 +37,7 @@ const createCityList = (data) => {
 const updateCityInfo = (info) => {
     const lat = info.latitude
     const lon = info.longitude
-    document.querySelector('#location-city-main').textContent = info.name;;
+    document.querySelector('#location-city-main').textContent = info.name;
     document.querySelector('#location-coutry-main').textContent = `${info.admin1} - ${info.country}`;
     document.querySelector('#latitude-info').textContent = lat;
     document.querySelector('#longitude-info').textContent = lon;
@@ -59,28 +61,30 @@ const updateWeatherInfo = (data) => {
     const day = data.current_weather.is_day;// se é noite: 0 se é dia: 1
     const windDirection = data.current_weather.winddirection;//direção do vento
     const weatherCode = data.current_weather.weathercode;//código do clima
-    const windspeed = data.current_weather.windspeed;//velocidade do vento
+    const windSpeed = data.current_weather.windspeed;//velocidade do vento
+
     const unitTemperatura = data.current_weather_units.temperature;//unidade de temperatura
     const unitWindDirection = data.current_weather_units.winddirection;//unidade da direção do vento
     const unitWindSpeed = data.current_weather_units.windspeed;//unidade da velocidade do vento
 
     document.querySelector('#temperature').textContent = temp+unitTemperatura;
     document.querySelector('#weather').textContent = getWeatherDescription(weatherCode)
-    document.querySelector('#wind').textContent = windspeed+unitWindSpeed
+    document.querySelector('#wind').textContent = windSpeed+unitWindSpeed
     document.querySelector('#windDirect').textContent = windDirection+unitWindDirection
+
     if(day === 1){
         //dia
         document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
         document.querySelector('.grid-main').style = 'color: var(--color-text-day)';
         document.querySelector('#weather-image').style = 'content: url(/img/sol.png);'
-    }
-    if(day === 0){
+    }else{
         //noite
         document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
         document.querySelector('.grid-main').style = 'color: var(--color-text-night)';
         document.querySelector('#weather-image').style = 'content: url(/img/limpoNoite.png);'
     }
 }
+ 
 
 //recebe código de condição climática da api e retorna descrição
 const getWeatherDescription = (codigo) => { 
@@ -164,8 +168,5 @@ const getWeatherDescription = (codigo) => {
 
 // Observação: O clima atual é recebido em um código. Você pode usar a tabela auxiliar 
 // anexa para converter o código em texto:
-
-
-
 
 //trazer cards todas as cidades quando click exibir todas as informaçõs referente aquelas cidades

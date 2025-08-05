@@ -23,6 +23,7 @@
     --border-color: gray;
     --color-btn-header:black;
     --background-color-transp: rgba(255, 255, 255, 0.822);
+    --background-btn-hover: rgba(245, 245, 245, 0.171);
     --color-input-text: black;
     --color-text-night: rgb(255, 255, 255);
     --color-text-day: black;
@@ -72,6 +73,10 @@ body{
     color: var(--color-btn-header);
 }
 
+#button-header:hover{
+    background-color:var(--background-btn-hover);
+}
+
 .grid-main{
     grid-area: main;
     color: var(--color-text-day);
@@ -80,8 +85,14 @@ body{
     justify-content: center;
     text-align: center;
     padding: 40px 0px;
-}
 
+}
+.box-city-temp{
+    border: 1px solid var(--background-color-transp);
+    margin: 10px 15px;
+    border-radius: 20px;
+    background-color: var(--background-btn-hover);
+}
 
 #location-city-main{font-size: 2.5rem;}
 #temperature{font-size: 3rem;}
@@ -92,8 +103,7 @@ body{
 .box-main-p{
     display: flex;
     flex-direction: column;
-    font-size: 1rem;
-
+    font-size: 1.1rem;
 }
 
 .box-main-p p{
@@ -129,9 +139,15 @@ body{
     justify-content: center;
     scroll-snap-align: start; 
     cursor: grab;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     flex-wrap: wrap;
     padding: 5px;
+    border: 1px solid var(--background-color-transp);
+}
+
+.box-week:hover{
+    background-color: var(--background-btn-hover);
+    color: var(--color-text-night);
 }
 
 @keyframes gradientShift {

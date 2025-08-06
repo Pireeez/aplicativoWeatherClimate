@@ -42,7 +42,8 @@ body{
     grid-template-areas: 
     'header header'
     'box box'
-    'main main';
+    'main main'
+    'date date';
     border: 1px solid rgb(255, 0, 0);
 
 }
@@ -148,6 +149,10 @@ body{
 .box-week:hover{
     background-color: var(--background-btn-hover);
     color: var(--color-text-night);
+}
+
+#dateNow{
+    grid-area: date;
 }
 
 @keyframes gradientShift {

@@ -11,7 +11,6 @@ const fetchCityData = async(inputValue) => {
     try {
         const data = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${inputValue}`).then(data => data.json());
         createCityList(data);
-
     } catch (erro) {
         alert("Erro: Cidade não localizada!",erro)
     }
@@ -26,7 +25,7 @@ const createCityList = (data) => {
             const div = document.createElement('div');
             div.className = 'box-week';
             div.textContent = cityInfo[i];
-            div.addEventListener('click', () => {
+            div.addEventListener('click',() => {
                 updateCityInfo(data.results[i]);
             })
             gridWeek.appendChild(div);
@@ -37,18 +36,21 @@ const createCityList = (data) => {
 const updateCityInfo = (info) => {
     const lat = info.latitude
     const lon = info.longitude
+    const timezone = info.timezone
+
+    console.log(info);
     document.querySelector('#location-city-main').textContent = info.name;
     document.querySelector('#location-coutry-main').textContent = `${info.admin1} - ${info.country}`;
     document.querySelector('#latitude-info').textContent = lat;
     document.querySelector('#longitude-info').textContent = lon;
     
-    fetchWeatherData(lat,lon);
+    fetchWeatherData(lat,lon,timezone);
 }
 
 //Faz requisição API de clima usando latitude e longitude e envia os dados para atualização de tela do clima
-const fetchWeatherData = async(lat,lon) => {
+const fetchWeatherData = async(lat,lon,timezone) => {
     try {
-        const data = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`).then(data => data.json())
+        const data = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=${timezone}`).then(data => data.json())
         updateWeatherInfo(data);
     } catch (error) {
         console.log('Erro a procurar dados da API:',error);
@@ -66,13 +68,20 @@ const updateWeatherInfo = (data) => {
     const unitTemperatura = data.current_weather_units.temperature;//unidade de temperatura
     const unitWindDirection = data.current_weather_units.winddirection;//unidade da direção do vento
     const unitWindSpeed = data.current_weather_units.windspeed;//unidade da velocidade do vento
+    const timezone = data.timezone
 
     document.querySelector('#temperature').textContent = temp+unitTemperatura;
     document.querySelector('#weather').textContent = getWeatherDescription(weatherCode)
     document.querySelector('#wind').textContent = windSpeed+unitWindSpeed
-    document.querySelector('#windDirect').textContent = windDirection+unitWindDirection
-
-    if(day === 1){
+    document.querySelector('#windDirect').textContent = windDirection+unitWindDirection;
+    const dateNow = (timezone) =>{
+        const data = new Date()
+        document.querySelector('#dateNow').textContent = data.toLocaleTimeString([],{timeZone: timezone});;
+        setTimeout(dateNow,1000)
+    }
+    dateNow(timezone);
+    
+    if(day){
         //dia
         document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
         document.querySelector('.grid-main').style = 'color: var(--color-text-day)';
@@ -86,38 +95,57 @@ const updateWeatherInfo = (data) => {
 }
  
 
-//recebe código de condição climática da api e retorna descrição
-const getWeatherDescription = (codigo) => { 
-    switch(codigo){
-        case 0: return "Céu limpo";
-        case 1: return "Principalmente limpo";
-        case 2: return "Parcialmente nublado";
-        case 3: return "Nublado";
-        case 45: return "Nevoeiro";
-        case 48: return "Nevoeiro com geada";
-        case 51: return "Chuvisco leve";
-        case 53: return "Chuvisco moderado";
-        case 55: return "Chuvisco forte";
-        case 61: return "Chuva leve";
-        case 63: return "Chuva moderada";
-        case 65: return "Chuva forte";
-        case 66: return "Chuva de granizo leve";
-        case 67: return "Chuva de granizo forte";
-        case 71: return "Nevasca leve";
-        case 73: return "Nevasca moderada";
-        case 75: return "Nevasca forte";
-        case 77: return "Neve granular";
-        case 80: return "Pancadas de chuva leves";
-        case 81: return "Pancadas de chuva moderadas";
-        case 82: return "Pancadas de chuva fortes";
-        case 85: return "Pancadas de neve leves";
-        case 86: return "Pancadas de neve fortes";
-        case 95: return "Trovoada";
-        case 96: return "Trovoada com granizo leve";
-        case 99: return "Trovoada com granizo forte";
-        default: return "Código desconhecido";
+
+
+const arrayWeatherDesc = [
+  0, "Céu limpo",
+  1, "Principalmente limpo",
+  2, "Parcialmente nublado",
+  3, "Nublado",
+  45, "Nevoeiro",
+  48, "Nevoeiro com geada",
+  51, "Chuvisco leve",
+  53, "Chuvisco moderado",
+  55, "Chuvisco forte",
+  61, "Chuva leve",
+  63, "Chuva moderada",
+  65, "Chuva forte",
+  66, "Chuva de granizo leve",
+  67, "Chuva de granizo forte",
+  71, "Nevasca leve",
+  73, "Nevasca moderada",
+  75, "Nevasca forte",
+  77, "Neve granular",
+  80, "Pancadas de chuva leves",
+  81, "Pancadas de chuva moderadas",
+  82, "Pancadas de chuva fortes",
+  85, "Pancadas de neve leves",
+  86, "Pancadas de neve fortes",
+  95, "Trovoada",
+  96, "Trovoada com granizo leve",
+  99, "Trovoada com granizo forte"
+];
+
+const weatherCodeMap = (() => {
+    const obj = {};
+    for(let i = 0; i < arrayWeatherDesc.length; i++){
+        if(i % 2 === 0){
+            const cod = arrayWeatherDesc[i];
+            const desc = arrayWeatherDesc[i + 1]
+            obj[cod] = desc
+        }
     }
+    return obj;
+})();
+
+const getWeatherDescription = (weatherCode) => {
+    return weatherCodeMap[weatherCode]
 }
+
+    
+
+
+
 
 // 0   Céu limpo  
 // 1   Principalmente limpo  
@@ -170,3 +198,36 @@ const getWeatherDescription = (codigo) => {
 // anexa para converter o código em texto:
 
 //trazer cards todas as cidades quando click exibir todas as informaçõs referente aquelas cidades
+
+//recebe código de condição climática da api e retorna descrição
+// const getWeatherDescription = (codigo) => { 
+//     switch(codigo){
+//         case 0: return "Céu limpo";
+//         case 1: return "Principalmente limpo";
+//         case 2: return "Parcialmente nublado";
+//         case 3: return "Nublado";
+//         case 45: return "Nevoeiro";
+//         case 48: return "Nevoeiro com geada";
+//         case 51: return "Chuvisco leve";
+//         case 53: return "Chuvisco moderado";
+//         case 55: return "Chuvisco forte";
+//         case 61: return "Chuva leve";
+//         case 63: return "Chuva moderada";
+//         case 65: return "Chuva forte";
+//         case 66: return "Chuva de granizo leve";
+//         case 67: return "Chuva de granizo forte";
+//         case 71: return "Nevasca leve";
+//         case 73: return "Nevasca moderada";
+//         case 75: return "Nevasca forte";
+//         case 77: return "Neve granular";
+//         case 80: return "Pancadas de chuva leves";
+//         case 81: return "Pancadas de chuva moderadas";
+//         case 82: return "Pancadas de chuva fortes";
+//         case 85: return "Pancadas de neve leves";
+//         case 86: return "Pancadas de neve fortes";
+//         case 95: return "Trovoada";
+//         case 96: return "Trovoada com granizo leve";
+//         case 99: return "Trovoada com granizo forte";
+//         default: return "Código desconhecido";
+//     }
+// }

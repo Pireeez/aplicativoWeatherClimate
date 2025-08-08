@@ -6,30 +6,45 @@ document.querySelector('#button-header').addEventListener('click', () => {
         fetchCityData(inputHeader);
     })
 
-//requisição API geocodificação/apiMeteo usando latitude, longitude e timezone para api da Meteo
+//busca dados da cidade, faz requisição com a API GeoCoding e Open Meteo
 const fetchCityData = async(inputValue) => {
     gridWeek.textContent = "Carregando...";
     try {
+        //busca dados de geocodificação
         const geoCod = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${inputValue}`).then(data => data.json());
+
+        //extrai latitude, longitude e timezone da resposta dados geoCod
         const lat = geoCod.results.map(lat => lat.latitude)
         const lon = geoCod.results.map(lon => lon.longitude)
         const timezone = geoCod.results.map(timezone => timezone.timezone)
+
+        //busca dados clima usando os dados de geocodificação
         const openMeteo = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=${timezone}`).then(data => data.json())
+        
+        //cria lista de cidades encontradas
         createCityList(geoCod,openMeteo);
+
     } catch (erro) {
         alert("Erro: Cidade não localizada!",erro);
         console.log(erro);
+        location.reload(); //recarrega a página em caso de erro
     }
 }
 
-//cria uma lista de cidade para cada resultado retornado pela api
+// cria lista de cidades conforme os resultado, passa como parametro geoCod e OpenMeteo
 const createCityList = (geoCod,openMeteo) => {
     gridWeek.innerHTML = '';
+
+    // verifica se openMeteo não é um array e transforma em array (garante que OpenMeteo é um array)
     if(!Array.isArray(openMeteo)){
-        openMeteo = [openMeteo]
+        openMeteo = [openMeteo];
     }
+
+    // monta um array com nome, cidade e pais mapeados/temperatura e unidade
     const cityInfo = geoCod.results.map(data => `${data.name} - ${data.admin1}, ${data.country}`);
     const temp = openMeteo.map(item => item.current_weather.temperature + item.current_weather_units.temperature);
+
+    //cria um card para cada cidade e ao clicar exibe detalhes
     for(let i=0; i < cityInfo.length;i++){
             const div = document.createElement('div');
             div.className = 'box-week';
@@ -43,30 +58,29 @@ const createCityList = (geoCod,openMeteo) => {
         }
 }
 
-//atualiza as informações com detalhes 
+//atualiza as informações com detalhes conforme selecionado
 const updateCityInfo = (geoCod,openMeteo) => {
-    
-    document.querySelector('#location-city-main').textContent = geoCod.name;
-    document.querySelector('#location-coutry-main').textContent = `${geoCod.admin1} - ${geoCod.country}`;
-    document.querySelector('#latitude-info').textContent =  geoCod.latitude;
-    document.querySelector('#longitude-info').textContent = geoCod.longitude;
-
-    const temp = openMeteo.current_weather.temperature;//temperatura
     const day = openMeteo.current_weather.is_day;// se é noite: 0 se é dia: 1
-    const windDirection = openMeteo.current_weather.winddirection;//direção do vento
-    const weatherCode = openMeteo.current_weather.weathercode;//código do clima
-    const windSpeed = openMeteo.current_weather.windspeed;//velocidade do vento
-
-    const unitTemperatura = openMeteo.current_weather_units.temperature;//unidade de temperatura
-    const unitWindDirection = openMeteo.current_weather_units.winddirection;//unidade da direção do vento
-    const unitWindSpeed = openMeteo.current_weather_units.windspeed;//unidade da velocidade do vento
     const timezone = openMeteo.timezone
 
-    document.querySelector('#temperature').textContent = temp+unitTemperatura;
-    document.querySelector('#weather').textContent = getWeatherDescription(weatherCode)
-    document.querySelector('#wind').textContent = windSpeed+unitWindSpeed
-    document.querySelector('#windDirect').textContent = windDirection+unitWindDirection;
-    document.querySelector('#dateNow').textContent = '';
+    // dataMap mapeia os elementos html com seus valores
+    const dataMap = {
+        '#location-city-main': geoCod.name,
+        '#location-coutry-main': `${geoCod.admin1} - ${geoCod.country}`,
+        '#latitude-info': geoCod.latitude,
+        '#longitude-info': geoCod.longitude,
+        '#temperature': `${openMeteo.current_weather.temperature}${openMeteo.current_weather_units.temperature}`,
+        '#weather': getWeatherDescription(openMeteo.current_weather.weathercode),
+        '#wind': `${openMeteo.current_weather.windspeed}${openMeteo.current_weather_units.windspeed}`,
+        '#windDirect': `${openMeteo.current_weather.winddirection}${openMeteo.current_weather_units.winddirection}`,
+    }
+
+    // percorro o dataMap e atualizo as informações do conteúdo html
+    Object.entries(dataMap).forEach(([key, values]) => {
+        document.querySelector(key).textContent = values;
+    })
+
+    //verifica se day é dia ou noite e altero o modo de exibição
     if (day) {
         document.body.classList.remove('dark-mode');
         document.body.classList.add('day-mode');
@@ -74,9 +88,12 @@ const updateCityInfo = (geoCod,openMeteo) => {
         document.body.classList.remove('day-mode');
         document.body.classList.add('dark-mode');
     }
+
+    // metodo que inicia o relógio
     startClock(timezone);
 }
 
+//exibe a data e hora atual da cidade
 const dateNow = (timezone) =>{
     const data = new Date()
     const time = data.toLocaleTimeString([],{timeZone: timezone});
@@ -84,18 +101,21 @@ const dateNow = (timezone) =>{
     document.querySelector('#dateNow').textContent = `${date} - ${time}`;
 }
 
+//inicia e mantém o relógio atualizado
 const startClock = (timezone) => {
     if (interval){
-        clearInterval(interval);
+        clearInterval(interval);//limpa intervalo anterior
     }
     dateNow(timezone)
     interval = setInterval(() => dateNow(timezone),1000)
 }
 
+//ação que rola a página até o inicio
 document.querySelector('#button-main').addEventListener('click', () =>{
     document.querySelector('#input-header').scrollIntoView({behavior: 'smooth'})
 })
 
+//lista de código com descrição dos climas
 const arrayWeatherDesc = [
   0, "Céu limpo",
   1, "Principalmente limpo",
@@ -125,6 +145,7 @@ const arrayWeatherDesc = [
   99, "Trovoada com granizo forte"
 ];
 
+//crio um objeto de mapeamento com cód e desc
 const weatherCodeMap = (() => {
     const obj = {};
     for(let i = 0; i < arrayWeatherDesc.length; i++){
@@ -137,128 +158,7 @@ const weatherCodeMap = (() => {
     return obj;
 })();
 
+//retorna a descrição do código de clima
 const getWeatherDescription = (weatherCode) => {
     return weatherCodeMap[weatherCode]
 }
-
-
-
-
-
-//mostra na tela info de temperatura, vento, descrição do clima e altera o visual conforme for dia e noite
-//const updateWeatherInfo = (data) => {
-    // const temp = data.current_weather.temperature;//temperatura
-    // const day = data.current_weather.is_day;// se é noite: 0 se é dia: 1
-    // const windDirection = data.current_weather.winddirection;//direção do vento
-    // const weatherCode = data.current_weather.weathercode;//código do clima
-    // const windSpeed = data.current_weather.windspeed;//velocidade do vento
-
-    // const unitTemperatura = data.current_weather_units.temperature;//unidade de temperatura
-    // const unitWindDirection = data.current_weather_units.winddirection;//unidade da direção do vento
-    // const unitWindSpeed = data.current_weather_units.windspeed;//unidade da velocidade do vento
-    // const timezone = data.timezone
-
-    // document.querySelector('#temperature').textContent = temp+unitTemperatura;
-    // document.querySelector('#weather').textContent = getWeatherDescription(weatherCode)
-    // document.querySelector('#wind').textContent = windSpeed+unitWindSpeed
-    // document.querySelector('#windDirect').textContent = windDirection+unitWindDirection;
-    // dateNow(timezone)
-    
-    // if(day){
-    //     //dia
-    //     document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
-    //     document.querySelector('.grid-main').style = 'color: var(--color-text-day)';
-    //     document.querySelector('#weather-image').style = 'content: url(/img/sol.png);'
-    // }else{
-    //     //noite
-    //     document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
-    //     document.querySelector('.grid-main').style = 'color: var(--color-text-night)';
-    //     document.querySelector('#weather-image').style = 'content: url(/img/limpoNoite.png);'
-    // }
-//}
-
-
-// 0   Céu limpo  
-// 1   Principalmente limpo  
-// 2   Parcialmente nublado  
-// 3   Nublado  
-// 45  Nevoeiro  
-// 48  Nevoeiro com geada  
-// 51  Chuvisco leve  
-// 53  Chuvisco moderado  
-// 55  Chuvisco forte  
-// 61  Chuva leve  
-// 63  Chuva moderada  
-// 65  Chuva forte  
-// 66  Chuva de granizo leve  
-// 67  Chuva de granizo forte  
-// 71  Nevasca leve  
-// 73  Nevasca moderada  
-// 75  Nevasca forte  
-// 77  Neve granular  
-// 80  Pancadas de chuva leves  
-// 81  Pancadas de chuva moderadas  
-// 82  Pancadas de chuva fortes  
-// 85  Pancadas de neve leves  
-// 86  Pancadas de neve fortes  
-// 95  Trovoada  
-// 96  Trovoada com granizo leve  
-// 99  Trovoada com granizo forte  
-
-// Para cada cidade, devem ser exibidos os seguintes dados:
-
-// Nome da Cidade;
-// Nome do País;
-// Latitude;
-// Longitude;
-// Clima atual;
-// Temperatura atual (com unidade de medida);
-// Velocidade do vento e direção (com unidades de medida);
-// Se atualmente é dia ou noite.
-
-// API de Clima:
-// Usaremos a Open-Meteo, uma API de clima gratuita e que não requer chave de autenticação.
-// Passo 1 (Geocodificação): Primeiro, precisamos converter o nome da cidade em coordenadas (latitude e longitude) 
-// e adquirir também o nome do país. Usaremos este endpoint: https://geocoding-api.open-meteo.com/v1/search?name=NOME+DA+CIDADE
-
-// Passo 2 (Busca do Clima): Com as coordenadas, buscaremos o clima atual, a temperatura atual, 
-// os dados do vento e se é dia ou noite usando este endpoint: 
-// https://api.open-meteo.com/v1/forecast?latitude=LAT&longitude=LON&current_weather=true
-
-// Observação: O clima atual é recebido em um código. Você pode usar a tabela auxiliar 
-// anexa para converter o código em texto:
-
-//trazer cards todas as cidades quando click exibir todas as informaçõs referente aquelas cidades
-
-//recebe código de condição climática da api e retorna descrição
-// const getWeatherDescription = (codigo) => { 
-//     switch(codigo){
-//         case 0: return "Céu limpo";
-//         case 1: return "Principalmente limpo";
-//         case 2: return "Parcialmente nublado";
-//         case 3: return "Nublado";
-//         case 45: return "Nevoeiro";
-//         case 48: return "Nevoeiro com geada";
-//         case 51: return "Chuvisco leve";
-//         case 53: return "Chuvisco moderado";
-//         case 55: return "Chuvisco forte";
-//         case 61: return "Chuva leve";
-//         case 63: return "Chuva moderada";
-//         case 65: return "Chuva forte";
-//         case 66: return "Chuva de granizo leve";
-//         case 67: return "Chuva de granizo forte";
-//         case 71: return "Nevasca leve";
-//         case 73: return "Nevasca moderada";
-//         case 75: return "Nevasca forte";
-//         case 77: return "Neve granular";
-//         case 80: return "Pancadas de chuva leves";
-//         case 81: return "Pancadas de chuva moderadas";
-//         case 82: return "Pancadas de chuva fortes";
-//         case 85: return "Pancadas de neve leves";
-//         case 86: return "Pancadas de neve fortes";
-//         case 95: return "Trovoada";
-//         case 96: return "Trovoada com granizo leve";
-//         case 99: return "Trovoada com granizo forte";
-//         default: return "Código desconhecido";
-//     }
-// }

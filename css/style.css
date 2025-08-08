@@ -10,11 +10,7 @@
 :root{
     --background-gradiente1-day:rgba(242, 245, 103, 0.986);
     --background-gradiente2-day:rgb(9, 247, 215);
-    --background-gradiente3-day:rgb(245, 255, 111);
-
-    --background-gradiente1-afternoon:rgb(250, 206, 124);
-    --background-gradiente2-afternoon:rgb(228, 149, 4);
-    --background-gradiente3-afternoon:rgb(165, 109, 6);
+    --background-gradiente3-day:rgb(0, 250, 208);
 
     --background-gradiente1-night:rgb(26, 0, 119);
     --background-gradiente2-night:rgb(14, 0, 48);
@@ -94,7 +90,6 @@ body{
     justify-content: space-around;
     align-items: center;
     height: 100px;
-
 }
 #input-header{
     border-radius: 10px;
@@ -144,6 +139,7 @@ body{
 .box-main-p{
     display: flex;
     flex-direction: column;
+    align-items: center;
     font-size: 1.1rem;
 }
 
@@ -153,6 +149,7 @@ body{
     padding: 15px;
     background-color: var(--background-color-transp);
     color: var(--color-input-text);
+    width: 85%;
 }
 
 .grid-week{
@@ -199,9 +196,13 @@ body{
 }
 
 #button-main{
-    margin: 10px 50px;
+    margin: 10px 10px;
     padding: 10px;
     cursor: pointer;
+    border-radius: 10px;
+    border: none;
+    height: 40px;
+    width: 80px;
 }
 
 #button-main:hover{

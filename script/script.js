@@ -1,101 +1,100 @@
 const gridWeek = document.querySelector('.grid-week');
-const btnHeader = document.querySelector('#button-header')
-    .addEventListener('click', () => {
+let interval;
+document.querySelector('.grid-main').style.display = 'none';
+document.querySelector('#button-header').addEventListener('click', () => {
         let inputHeader = document.querySelector('#input-header').value;
         fetchCityData(inputHeader);
     })
 
-//requisição API geocodificação usando nome da cidade e envia resultado para 
+//requisição API geocodificação/apiMeteo usando latitude, longitude e timezone para api da Meteo
 const fetchCityData = async(inputValue) => {
     gridWeek.textContent = "Carregando...";
     try {
-        const data = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${inputValue}`).then(data => data.json());
-        createCityList(data);
+        const geoCod = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${inputValue}`).then(data => data.json());
+        const lat = geoCod.results.map(lat => lat.latitude)
+        const lon = geoCod.results.map(lon => lon.longitude)
+        const timezone = geoCod.results.map(timezone => timezone.timezone)
+        const openMeteo = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=${timezone}`).then(data => data.json())
+        createCityList(geoCod,openMeteo);
     } catch (erro) {
-        alert("Erro: Cidade não localizada!",erro)
+        alert("Erro: Cidade não localizada!",erro);
+        console.log(erro);
     }
 }
 
 //cria uma lista de cidade para cada resultado retornado pela api
-const createCityList = (data) => {
+const createCityList = (geoCod,openMeteo) => {
     gridWeek.innerHTML = '';
-    const cityInfo = data.results.map(data => `${data.name} - ${data.admin1}, ${data.country}`);
-
+    if(!Array.isArray(openMeteo)){
+        openMeteo = [openMeteo]
+    }
+    const cityInfo = geoCod.results.map(data => `${data.name} - ${data.admin1}, ${data.country}`);
+    const temp = openMeteo.map(item => item.current_weather.temperature + item.current_weather_units.temperature);
     for(let i=0; i < cityInfo.length;i++){
             const div = document.createElement('div');
             div.className = 'box-week';
-            div.textContent = cityInfo[i];
+            div.textContent = `${cityInfo[i]} - ${temp[i]}`
             div.addEventListener('click',() => {
-                updateCityInfo(data.results[i]);
+                document.querySelector('.grid-main').style.display = 'flex';
+                document.querySelector('.grid-main').scrollIntoView({behavior: 'smooth'})
+                updateCityInfo(geoCod.results[i],openMeteo[i]),2000
             })
             gridWeek.appendChild(div);
         }
 }
 
-//atualiza as informações na tela (nome,pais,lat,lon) e chama api para buscar o clima dessa localização
-const updateCityInfo = (info) => {
-    const lat = info.latitude
-    const lon = info.longitude
-    const timezone = info.timezone
-
-    console.log(info);
-    document.querySelector('#location-city-main').textContent = info.name;
-    document.querySelector('#location-coutry-main').textContent = `${info.admin1} - ${info.country}`;
-    document.querySelector('#latitude-info').textContent = lat;
-    document.querySelector('#longitude-info').textContent = lon;
+//atualiza as informações com detalhes 
+const updateCityInfo = (geoCod,openMeteo) => {
     
-    fetchWeatherData(lat,lon,timezone);
-}
+    document.querySelector('#location-city-main').textContent = geoCod.name;
+    document.querySelector('#location-coutry-main').textContent = `${geoCod.admin1} - ${geoCod.country}`;
+    document.querySelector('#latitude-info').textContent =  geoCod.latitude;
+    document.querySelector('#longitude-info').textContent = geoCod.longitude;
 
-//Faz requisição API de clima usando latitude e longitude e envia os dados para atualização de tela do clima
-const fetchWeatherData = async(lat,lon,timezone) => {
-    try {
-        const data = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=${timezone}`).then(data => data.json())
-        updateWeatherInfo(data);
-    } catch (error) {
-        console.log('Erro a procurar dados da API:',error);
-    }
-}
+    const temp = openMeteo.current_weather.temperature;//temperatura
+    const day = openMeteo.current_weather.is_day;// se é noite: 0 se é dia: 1
+    const windDirection = openMeteo.current_weather.winddirection;//direção do vento
+    const weatherCode = openMeteo.current_weather.weathercode;//código do clima
+    const windSpeed = openMeteo.current_weather.windspeed;//velocidade do vento
 
-//mostra na tela info de temperatura, vento, descrição do clima e altera o visual conforme for dia e noite
-const updateWeatherInfo = (data) => {
-    const temp = data.current_weather.temperature;//temperatura
-    const day = data.current_weather.is_day;// se é noite: 0 se é dia: 1
-    const windDirection = data.current_weather.winddirection;//direção do vento
-    const weatherCode = data.current_weather.weathercode;//código do clima
-    const windSpeed = data.current_weather.windspeed;//velocidade do vento
-
-    const unitTemperatura = data.current_weather_units.temperature;//unidade de temperatura
-    const unitWindDirection = data.current_weather_units.winddirection;//unidade da direção do vento
-    const unitWindSpeed = data.current_weather_units.windspeed;//unidade da velocidade do vento
-    const timezone = data.timezone
+    const unitTemperatura = openMeteo.current_weather_units.temperature;//unidade de temperatura
+    const unitWindDirection = openMeteo.current_weather_units.winddirection;//unidade da direção do vento
+    const unitWindSpeed = openMeteo.current_weather_units.windspeed;//unidade da velocidade do vento
+    const timezone = openMeteo.timezone
 
     document.querySelector('#temperature').textContent = temp+unitTemperatura;
     document.querySelector('#weather').textContent = getWeatherDescription(weatherCode)
     document.querySelector('#wind').textContent = windSpeed+unitWindSpeed
     document.querySelector('#windDirect').textContent = windDirection+unitWindDirection;
-    const dateNow = (timezone) =>{
-        const data = new Date()
-        document.querySelector('#dateNow').textContent = data.toLocaleTimeString([],{timeZone: timezone});;
-        setTimeout(dateNow,1000)
-    }
-    dateNow(timezone);
-    
-    if(day){
-        //dia
-        document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
-        document.querySelector('.grid-main').style = 'color: var(--color-text-day)';
-        document.querySelector('#weather-image').style = 'content: url(/img/sol.png);'
+    document.querySelector('#dateNow').textContent = '';
+    if (day) {
+        document.body.classList.remove('dark-mode');
+        document.body.classList.add('day-mode');
     }else{
-        //noite
-        document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
-        document.querySelector('.grid-main').style = 'color: var(--color-text-night)';
-        document.querySelector('#weather-image').style = 'content: url(/img/limpoNoite.png);'
+        document.body.classList.remove('day-mode');
+        document.body.classList.add('dark-mode');
     }
+    startClock(timezone);
 }
- 
 
+const dateNow = (timezone) =>{
+    const data = new Date()
+    const time = data.toLocaleTimeString([],{timeZone: timezone});
+    const date = data.toLocaleDateString([],{timeZone: timezone})
+    document.querySelector('#dateNow').textContent = `${date} - ${time}`;
+}
 
+const startClock = (timezone) => {
+    if (interval){
+        clearInterval(interval);
+    }
+    dateNow(timezone)
+    interval = setInterval(() => dateNow(timezone),1000)
+}
+
+document.querySelector('#button-main').addEventListener('click', () =>{
+    document.querySelector('#input-header').scrollIntoView({behavior: 'smooth'})
+})
 
 const arrayWeatherDesc = [
   0, "Céu limpo",
@@ -142,9 +141,41 @@ const getWeatherDescription = (weatherCode) => {
     return weatherCodeMap[weatherCode]
 }
 
+
+
+
+
+//mostra na tela info de temperatura, vento, descrição do clima e altera o visual conforme for dia e noite
+//const updateWeatherInfo = (data) => {
+    // const temp = data.current_weather.temperature;//temperatura
+    // const day = data.current_weather.is_day;// se é noite: 0 se é dia: 1
+    // const windDirection = data.current_weather.winddirection;//direção do vento
+    // const weatherCode = data.current_weather.weathercode;//código do clima
+    // const windSpeed = data.current_weather.windspeed;//velocidade do vento
+
+    // const unitTemperatura = data.current_weather_units.temperature;//unidade de temperatura
+    // const unitWindDirection = data.current_weather_units.winddirection;//unidade da direção do vento
+    // const unitWindSpeed = data.current_weather_units.windspeed;//unidade da velocidade do vento
+    // const timezone = data.timezone
+
+    // document.querySelector('#temperature').textContent = temp+unitTemperatura;
+    // document.querySelector('#weather').textContent = getWeatherDescription(weatherCode)
+    // document.querySelector('#wind').textContent = windSpeed+unitWindSpeed
+    // document.querySelector('#windDirect').textContent = windDirection+unitWindDirection;
+    // dateNow(timezone)
     
-
-
+    // if(day){
+    //     //dia
+    //     document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
+    //     document.querySelector('.grid-main').style = 'color: var(--color-text-day)';
+    //     document.querySelector('#weather-image').style = 'content: url(/img/sol.png);'
+    // }else{
+    //     //noite
+    //     document.querySelector('body').style = 'background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night)); background-size: 600% 600%; animation: gradientShift 3s ease infinite;';
+    //     document.querySelector('.grid-main').style = 'color: var(--color-text-night)';
+    //     document.querySelector('#weather-image').style = 'content: url(/img/limpoNoite.png);'
+    // }
+//}
 
 
 // 0   Céu limpo  

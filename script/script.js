@@ -1,10 +1,21 @@
+
+import weatherCodeMap from './weatherData.js' //importa minha função que exibe a descrição do código do clima
+import getWindDirection from './windDirection.js';
+
 const gridWeek = document.querySelector('.grid-week');
-let interval;
 document.querySelector('.grid-main').style.display = 'none';
 document.querySelector('#button-header').addEventListener('click', () => {
+    let inputHeader = document.querySelector('#input-header').value;
+    document.querySelector('.grid-main').style.display = 'none';
+        
+    fetchCityData(inputHeader);
+})
+document.querySelector('#input-header').addEventListener('keydown', (event) => {
+    if(event.key === 'Enter'){
         let inputHeader = document.querySelector('#input-header').value;
         fetchCityData(inputHeader);
-    })
+    }
+})
 
 //busca dados da cidade, faz requisição com a API GeoCoding e Open Meteo
 const fetchCityData = async(inputValue) => {
@@ -52,7 +63,7 @@ const createCityList = (geoCod,openMeteo) => {
             div.addEventListener('click',() => {
                 document.querySelector('.grid-main').style.display = 'flex';
                 document.querySelector('.grid-main').scrollIntoView({behavior: 'smooth'})
-                updateCityInfo(geoCod.results[i],openMeteo[i]),2000
+                updateCityInfo(geoCod.results[i],openMeteo[i])
             })
             gridWeek.appendChild(div);
         }
@@ -62,6 +73,7 @@ const createCityList = (geoCod,openMeteo) => {
 const updateCityInfo = (geoCod,openMeteo) => {
     const day = openMeteo.current_weather.is_day;// se é noite: 0 se é dia: 1
     const timezone = openMeteo.timezone
+    const windDirection = openMeteo.current_weather.winddirection
 
     // dataMap mapeia os elementos html com seus valores
     const dataMap = {
@@ -72,7 +84,7 @@ const updateCityInfo = (geoCod,openMeteo) => {
         '#temperature': `${openMeteo.current_weather.temperature}${openMeteo.current_weather_units.temperature}`,
         '#weather': getWeatherDescription(openMeteo.current_weather.weathercode),
         '#wind': `${openMeteo.current_weather.windspeed}${openMeteo.current_weather_units.windspeed}`,
-        '#windDirect': `${openMeteo.current_weather.winddirection}${openMeteo.current_weather_units.winddirection}`,
+        '#windDirect': `${windDirection}${openMeteo.current_weather_units.winddirection} - ${getWindDirection(windDirection)}`,
     }
 
     // percorro o dataMap e atualizo as informações do conteúdo html
@@ -93,6 +105,16 @@ const updateCityInfo = (geoCod,openMeteo) => {
     startClock(timezone);
 }
 
+let interval;
+//inicia e mantém o relógio atualizado
+const startClock = (timezone) => {
+    if (interval){
+        clearInterval(interval);//limpa intervalo anterior
+    }
+    dateNow(timezone)
+    interval = setInterval(dateNow,1000,timezone)
+}
+
 //exibe a data e hora atual da cidade
 const dateNow = (timezone) =>{
     const data = new Date()
@@ -101,62 +123,10 @@ const dateNow = (timezone) =>{
     document.querySelector('#dateNow').textContent = `${date} - ${time}`;
 }
 
-//inicia e mantém o relógio atualizado
-const startClock = (timezone) => {
-    if (interval){
-        clearInterval(interval);//limpa intervalo anterior
-    }
-    dateNow(timezone)
-    interval = setInterval(() => dateNow(timezone),1000)
-}
-
 //ação que rola a página até o inicio
 document.querySelector('#button-main').addEventListener('click', () =>{
-    document.querySelector('#input-header').scrollIntoView({behavior: 'smooth'})
+    document.querySelector('#title-logo').scrollIntoView({behavior: 'smooth'});
 })
-
-//lista de código com descrição dos climas
-const arrayWeatherDesc = [
-  0, "Céu limpo",
-  1, "Principalmente limpo",
-  2, "Parcialmente nublado",
-  3, "Nublado",
-  45, "Nevoeiro",
-  48, "Nevoeiro com geada",
-  51, "Chuvisco leve",
-  53, "Chuvisco moderado",
-  55, "Chuvisco forte",
-  61, "Chuva leve",
-  63, "Chuva moderada",
-  65, "Chuva forte",
-  66, "Chuva de granizo leve",
-  67, "Chuva de granizo forte",
-  71, "Nevasca leve",
-  73, "Nevasca moderada",
-  75, "Nevasca forte",
-  77, "Neve granular",
-  80, "Pancadas de chuva leves",
-  81, "Pancadas de chuva moderadas",
-  82, "Pancadas de chuva fortes",
-  85, "Pancadas de neve leves",
-  86, "Pancadas de neve fortes",
-  95, "Trovoada",
-  96, "Trovoada com granizo leve",
-  99, "Trovoada com granizo forte"
-];
-
-//crio um objeto de mapeamento com cód e desc
-const weatherCodeMap = (() => {
-    const obj = {};
-    for(let i = 0; i < arrayWeatherDesc.length; i++){
-        if(i % 2 === 0){
-            const cod = arrayWeatherDesc[i];
-            const desc = arrayWeatherDesc[i + 1]
-            obj[cod] = desc
-        }
-    }
-    return obj;
-})();
 
 //retorna a descrição do código de clima
 const getWeatherDescription = (weatherCode) => {

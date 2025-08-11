@@ -1,215 +1,376 @@
-*{
-    padding: 0px;
-    margin: 0px;
-    box-sizing: content-box;
-    font-family: 'Poppins', sans-serif;
-    list-style: none;
-    outline: none;
-    text-decoration: none;
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: content-box;
+  font-family: "Poppins", sans-serif;
+  list-style: none;
+  outline: none;
+  text-decoration: none;
 }
-:root{
-    --background-gradiente1-day:rgba(242, 245, 103, 0.986);
-    --background-gradiente2-day:rgb(9, 247, 215);
-    --background-gradiente3-day:rgb(0, 250, 208);
+:root {
+  --background-gradiente1-day: rgba(242, 245, 103, 0.986);
+  --background-gradiente2-day: rgb(9, 247, 215);
+  --background-gradiente3-day: rgb(0, 250, 208);
 
-    --background-gradiente1-night:rgb(26, 0, 119);
-    --background-gradiente2-night:rgb(14, 0, 48);
-    --background-gradiente3-night:rgb(22, 0, 56);
+  --background-gradiente1-night: rgb(26, 0, 119);
+  --background-gradiente2-night: rgb(14, 0, 48);
+  --background-gradiente3-night: rgb(22, 0, 56);
 
-    --border-color: gray;
-    --color-btn-header:black;
-    --background-color-transp: rgba(255, 255, 255, 0.822);
-    --background-btn-hover: rgba(245, 245, 245, 0.171);
-    --color-input-text: black;
-    --color-text-night: rgb(255, 255, 255);
-    --color-text-day: black;
-    --color-text-afternoon:black;
+  --border-color: gray;
+  --color-btn-header: black;
+  --background-color-transp: rgba(255, 255, 255, 0.822);
+  --background-btn-hover: rgba(245, 245, 245, 0.171);
+  --color-input-text: black;
+  --color-text-night: rgb(255, 255, 255);
+  --color-text-day: black;
+  --color-text-afternoon: black;
 }
 
 /* dia */
 body.day-mode {
-    background: linear-gradient(
-        300deg,
-        var(--background-gradiente1-day),
-        var(--background-gradiente2-day),
-        var(--background-gradiente3-day)
-    );
-    background-size: 600% 600%;
-    animation: gradientShift 3s ease infinite;
+  background: linear-gradient(
+    300deg,
+    var(--background-gradiente1-day),
+    var(--background-gradiente2-day),
+    var(--background-gradiente3-day)
+  );
+  background-size: 600% 600%;
+  animation: gradientShift 3s ease infinite;
 }
 
 body.day-mode .grid-main {
-    color: var(--color-text-day);
+  color: var(--color-text-day);
 }
 
 body.day-mode #weather-image {
-    content: url("/img/sol.png");
+  content: url("/img/sol.png");
 }
 
 /* noite */
 body.dark-mode {
-    background: linear-gradient(
-        300deg,
-        var(--background-gradiente1-night),
-        var(--background-gradiente2-night),
-        var(--background-gradiente3-night)
-    );
-    background-size: 600% 600%;
-    animation: gradientShift 3s ease infinite;
+  background: linear-gradient(
+    300deg,
+    var(--background-gradiente1-night),
+    var(--background-gradiente2-night),
+    var(--background-gradiente3-night)
+  );
+  background-size: 600% 600%;
+  animation: gradientShift 3s ease infinite;
 }
 
 body.dark-mode .grid-main {
-    color: var(--color-text-night);
+  color: var(--color-text-night);
 }
 
 body.dark-mode #weather-image {
-    content: url("/img/limpoNoite.png");
+  content: url("/img/limpoNoite.png");
 }
 
-body{
-    /* background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night)); */
-    background: linear-gradient(300deg, var(--background-gradiente1-day), var(--background-gradiente2-day), var(--background-gradiente3-day)); 
+body {
+  /* background: linear-gradient(300deg, var(--background-gradiente1-night), var(--background-gradiente2-night), var(--background-gradiente3-night)); */
+  background: linear-gradient(
+    300deg,
+    var(--background-gradiente1-day),
+    var(--background-gradiente2-day),
+    var(--background-gradiente3-day)
+  );
+  background-size: 600% 600%;
+  animation: gradientShift 3s ease infinite;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+
+.grid {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "box box"
+    "main main"
+    "date date";
+}
+.grid-nav {
+  grid-area: header;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 150px;
+}
+
+.grid-nav h1 {
+    color: var(--color-text-night);
+    background: linear-gradient(
+      300deg,
+      var(--background-gradiente1-night),
+      var(--background-gradiente2-day),
+      var(--background-gradiente3-night)
+    );
     background-size: 600% 600%;
     animation: gradientShift 3s ease infinite;
-    background-repeat: no-repeat;
-    height: 100vh;
-} 
+    border-radius: 100px;
+    font-size: 2rem;
+    padding: 0px 10px;
+    margin-top: 10px;
+  }
+#input-header {
+  border-radius: 10px;
+  width: 290px;
+  height: 30px;
+  background-color: var(--background-color-transp);
+  padding-left: 10px;
+  border: none;
+  cursor: pointer;
+}
 
-.grid{
-    display: grid;
-    grid-template-areas: 
-    'header header'
-    'box box'
-    'main main'
-    'date date';
+#button-header {
+  border-radius: 10px;
+  border: none;
+  background-color: var(--background-color-transp);
+  padding: 5px 10px;
+  color: var(--color-btn-header);
+  cursor: pointer;
 }
-.grid-nav{ 
-    grid-area: header;
-    display: flex;
+
+#button-header:hover {
+  background-color: var(--background-btn-hover);
+}
+
+.grid-main {
+  grid-area: main;
+  color: var(--color-text-day);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 0px;
+}
+.box-city-temp {
+  border: 1px solid var(--background-color-transp);
+  margin: 10px 15px;
+  border-radius: 20px;
+  background-color: var(--background-btn-hover);
+}
+
+#location-city-main {
+  font-size: 2.5rem;
+}
+#temperature {
+  font-size: 3rem;
+}
+#location-coutry-main {
+  font-size: 1.5rem;
+}
+.box-weather {
+  width: 100%;
+}
+.box-main-p {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.1rem;
+}
+
+.box-main-p p {
+  margin: 10px 10px;
+  border-radius: 15px;
+  padding: 15px;
+  background-color: var(--background-color-transp);
+  color: var(--color-input-text);
+  width: 85%;
+}
+
+.grid-week {
+  grid-area: box;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  gap: 30px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 40px;
+}
+
+.grid-week::-webkit-scrollbar {
+  display: none;
+}
+.box-week {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 100px;
+  border-radius: 30px;
+  background-color: var(--background-color-transp);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  scroll-snap-align: start;
+  cursor: grab;
+  font-size: 1rem;
+  flex-wrap: wrap;
+  padding: 5px;
+  border: 1px solid var(--background-color-transp);
+}
+
+.box-week:hover {
+  background-color: var(--background-btn-hover);
+  color: var(--color-text-night);
+}
+
+#dateNow {
+  grid-area: date;
+}
+
+#button-main {
+  margin: 10px 10px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+  border: none;
+  height: 40px;
+  width: 80px;
+}
+
+#button-main:hover {
+  background-color: var(--background-color-transp);
+}
+
+@media (min-width: 650px) and (max-width: 1024px) {
+  .grid {
+    grid-template-areas:
+      "header header"
+      "box main"
+      "date date";
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .grid-nav {
     flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    height: 100px;
-}
-#input-header{
-    border-radius: 10px;
-    width: 290px;
-    height: 30px;
-    background-color: var(--background-color-transp);
-    padding-left: 10px;
-    border: none;
+    justify-content: space-between;
+    height: auto;
+    padding: 10px 20px;
+    height: 100%;
+  }
+  #button-header {
     cursor: pointer;
-}
-
-#button-header{
-    border-radius: 10px;
-    border: none;
-    background-color: var(--background-color-transp);
-    padding: 5px 10px;
-    color: var(--color-btn-header);
-}
-
-#button-header:hover{
-    background-color:var(--background-btn-hover);
-}
-
-.grid-main{
-    grid-area: main;
-    color: var(--color-text-day);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 0px;
-
-}
-.box-city-temp{
-    border: 1px solid var(--background-color-transp);
-    margin: 10px 15px;
-    border-radius: 20px;
-    background-color: var(--background-btn-hover);
-}
-
-#location-city-main{font-size: 2.5rem;}
-#temperature{font-size: 3rem;}
-#location-coutry-main{font-size: 1.5rem;}
-.box-weather{
-    width: 100%;
-}
-.box-main-p{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 1.1rem;
-}
-
-.box-main-p p{
-    margin: 10px 10px;
-    border-radius: 15px;
-    padding: 15px;
-    background-color: var(--background-color-transp);
-    color: var(--color-input-text);
-    width: 85%;
-}
-
-.grid-week{
-    grid-area: box;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-    gap: 30px;
-    overflow-x: auto; 
-    scroll-snap-type: x mandatory; 
-    -webkit-overflow-scrolling: touch; 
-    padding: 10px 40px;
-}
-
-.grid-week::-webkit-scrollbar{
-    display: none;
-}
-.box-week{
-    flex: 0 0 auto; 
-    width: 100%;
-    height: 100px;
-    border-radius: 30px;
-    background-color: var(--background-color-transp);
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: center;
-    scroll-snap-align: start; 
-    cursor: grab;
-    font-size: 1rem;
-    flex-wrap: wrap;
-    padding: 5px;
-    border: 1px solid var(--background-color-transp);
-}
-
-.box-week:hover{
-    background-color: var(--background-btn-hover);
+  }
+  .grid-nav h1 {
     color: var(--color-text-night);
+    background: linear-gradient(
+      300deg,
+      var(--background-gradiente1-night),
+      var(--background-gradiente2-day),
+      var(--background-gradiente3-night)
+    );
+    background-size: 600% 600%;
+    animation: gradientShift 3s ease infinite;
+    border-radius: 100px;
+    font-size: 2rem;
+    padding: 0px 10px;
+    margin-top: 10px;
+  }
+
+  #input-header {
+    width: 80%;
+    height: 50px;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .grid-main{
+    padding-top: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: auto; /* deixa rolar */
+    align-self: start;
+  }
+
+  .grid-week {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    overflow-x: visible;
+  }
+
+  .box-week {
+    width: 300px;
+    height: 120px;
+    font-size: 1.1rem;
+  }
+
+  #button-main {
+    display: none;
+  }
 }
 
-#dateNow{
-    grid-area: date;
-}
+@media (min-width: 1025px) {
+  .grid {
+    display: grid;
+    grid-template-areas:
+      "header header"
+      "header header"
+      "box box"
+      "main main"
+      "date date";
+  }
 
-#button-main{
-    margin: 10px 10px;
-    padding: 10px;
+  .grid-nav {
+    gap: 10px;
+    height: 100%;
+  }
+
+  .grid-nav h1 {
+    color: var(--color-text-night);
+    background: linear-gradient(
+      300deg,
+      var(--background-gradiente1-night),
+      var(--background-gradiente2-day),
+      var(--background-gradiente3-night)
+    );
+    background-size: 600% 600%;
+    animation: gradientShift 3s ease infinite;
+    border-radius: 100px;
+    font-size: 3rem;
+    padding: 0px 10px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  #input-header {
+    width: 50%;
+    height: 50px;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  #button-header {
     cursor: pointer;
-    border-radius: 10px;
-    border: none;
-    height: 40px;
-    width: 80px;
+    width: 20%;
+  }
+
+  .box-week {
+    width: 500px;
+    font-size: 1.5rem;
+  }
+
+  .box-main-p {
+    font-size: 1.5rem;
+  }
+  .box-weather {
+    width: 60%;
+  }
 }
 
-#button-main:hover{
-    background-color: var(--background-color-transp) ;
-}
 @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

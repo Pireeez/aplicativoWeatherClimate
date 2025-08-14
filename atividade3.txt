@@ -1,0 +1,110 @@
+
+Atividade 3
+Nessa terceira atividade a API será para uma plataforma de cursos online. 
+Nela, usuários podem se cadastrar, fazer login, se inscrever em cursos 
+e assistir aulas. Descreva quais seriam as rotas para gerenciar usuários, 
+listar cursos, acessar detalhes, fazer inscrições e marcar aulas como 
+concluídas. Determine quais dados seriam enviados pelo cliente e quais 
+seriam devolvidos pelo servidor em cada rota. Pense também em quais 
+códigos de status HTTP seriam adequados para casos como cadastro 
+realizado com sucesso, tentativa de acessar um curso sem estar 
+inscrito ou busca por uma aula que não existe.
+
+Atividade 3 - Curso Online
+
+POST /Cadastro
+
+Entrada:
+{
+    "nome": "Gustavo",
+    "idade": 17,
+    "sexo": "Masculino",
+    "password": "ASDGJ43472348hihdf"
+}
+
+Saída:
+200 OK
+{
+    "message":"Usuário cadastrado com sucesso"
+}
+400 Bad Request:
+{
+    message: "O campo idade não foi informado!"
+}
+
+
+GET /Usuarios
+
+Saída:
+200 Ok
+{
+    "id_usu": 112233,
+    "nome": "Gustavo",
+    "idade": 17,
+    "sexo": "Masculino",
+    "password": "ASDGJ43472348hihdf",
+    "cursosConcluídos": {"id_curso": 223344,"tempoCurso": 5000 }
+}
+
+
+
+POST /Login
+
+Entrada: 
+{
+    "usuario": "Gustavo",
+    "senha": "ASDGJ43472348hihdf"
+}
+
+Saída:
+200 Ok
+{
+    "message": "Login realizado com sucesso"
+}
+
+401 Unauthorized:
+{
+    "message": "Usuário ou senha inválido"
+}
+
+
+GET /Cursos
+
+Saída:
+200 Ok
+[
+    {
+        "id_curso": 223344
+        "nomeCurso": "Curso de JavaScript",
+        "tempoCurso": 7200,
+    }
+
+    {
+        "id_curso": 334455
+        "nomeCurso": "Curso de Node.js",
+        "tempoCurso": 6000,
+    }...
+]
+
+403 Forbidden:
+{
+    "message": "Assine nossa versão Pro para ter aulas com o Selva!!!"
+}
+
+
+
+POST /IncricaoCurso
+
+Entrada:
+200 OK
+{
+    "id_curso" : 334455
+
+}
+
+Saída:
+404 Not Found:
+
+{
+    "message": "Curso não encontrado"
+}

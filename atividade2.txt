@@ -1,0 +1,71 @@
+
+Atividade 2
+Imagine agora que está responsável por uma API de um aplicativo de 
+entrega de comida. O cliente acessa o aplicativo, escolhe pratos, 
+monta um pedido e acompanha a entrega. Reflita sobre quais seriam as 
+rotas necessárias para esse processo, quais dados o cliente enviaria em 
+cada etapa e quais informações o servidor deveria retornar. 
+Inclua na sua análise quais códigos de status HTTP seriam 
+adequados para cada resposta, como a confirmação de um pedido, 
+a tentativa de pedir um prato inexistente ou a recusa de uma 
+operação por falta de permissão.
+
+Atividade 2 - Ifood
+
+GET /Pratos
+
+200 OK
+Saída:
+[
+    {"id":1,"nomePrato": "Milanesa", "valor":30},
+    {"id":2,"nomePrato": "Virada Paulista", "valor":25},
+    {"id":3,"nomePrato": "Frango Frito", "valor":20.25},
+    {"id":4,"nomePrato": "Picadiho de Carne", "valor":30}
+]
+
+404 Not Found: O servidor não encontrou o recurso 
+{
+    message:"Prato inexistente"
+}
+
+POST /Prato/Pedido
+
+Entrada: 
+[
+    {    
+        "id": 1,
+        "qtd": 2
+    }
+]
+
+Saída:
+200 Ok 
+{
+    "message": "Pedido 22334 realizado com sucesso!"
+}
+
+401 Unauthorized: O cliente não está autenticado e precisa se identificar
+{
+    "message":"Faça o login para realizar o pedido"
+}
+
+
+POST /Pedido/Entrega
+
+Entrada:
+[
+    {
+        "numeroPedido": 22334
+    }
+]
+
+Saída:
+200 OK 
+{
+    "message":"Entrega a caminho!"
+}
+
+404 Not Found
+{
+    "message":"número do pedido não localizado"
+}

@@ -1,0 +1,86 @@
+
+Atividade 1
+Imagine que você está desenvolvendo uma API para um sistema de 
+biblioteca online. Ela deve permitir que usuários pesquisem livros, 
+reservem exemplares e registrem devoluções. Seu livro deve ter nome, 
+descrição, gêneros, autores e data de lançamento. 
+Pense em quais rotas essa API deveria ter, quais informações o 
+cliente enviaria em cada uma delas e quais dados o servidor devolveria. 
+Considere também quais códigos de status HTTP poderiam ser utilizados 
+em diferentes situações, como quando um livro não é encontrado, 
+quando já está emprestado ou quando o usuário tenta realizar uma ação 
+sem estar autenticado.
+
+Atiavidade 1 - Biblioteca
+
+GET /Livros
+
+Entrada:
+{
+    "nome": "Quixote"
+}
+
+Saída:
+200 OK
+[
+    {
+         "id": 234
+         "nome": "Dom Quixote de La Mancha",
+         "descricao": "considerado um dos maiores clássicos da literatura universal e o primeiro romance moderno"
+         "generos": "romance"
+         "autores": "Miguel de Cervantes Saavedra"
+         "dataLançaento": 1605
+    }...
+]
+401 Unauthorized
+{
+    "message": "Cadastra-se para ver os livros"
+}
+
+
+POST /livros/reserva 
+
+Entrada:
+{
+     "id": 234
+}
+
+Saída:
+200 OK
+{
+    "message": "Livro reservado"
+}
+
+404: O servidor não encontrou recursos
+{
+    "message": "Livro não encontrado"
+}
+
+400:
+{
+    "message": "Livro já reservado"
+}
+
+POST /livro/devolucao
+
+Entrada:
+{
+     "id": 234
+}
+
+Saída:
+200 OK
+{
+    "message": "Livro devolvido com sucesso!"
+}
+
+403 Forbidden: 
+{
+    "message":"Você não tem permissão para realizar essa ação"
+}
+
+400:
+{
+    "message": "Livro já devolvido"
+}
+
